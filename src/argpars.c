@@ -214,6 +214,10 @@ ap_ErrorType ap_mapProvidedFlags(ap_FlagResult **mappedFlagsPtr, ap_Config *conf
   return OK;
 }
 
+ap_ErrorType ap_mapArgsToFlags(ap_Result *result, int argc, char **argv) {
+    return OK;
+}
+
 // resultPtr - pointer which to store the result to
 // config - readonly config information
 // argc - users argc
@@ -234,8 +238,19 @@ ap_ErrorType ap_parse(ap_Result *resultPtr, ap_Config *config, int argc, char **
     return providedFlagsMappingValidity;
   }
 
+  // TODO: Check for compatibility with free(flags)
+  ap_Result result = {
+      argc,
+      {
+          .acceptMultiArgs = config->acceptMultiArgs,
+          .inputType = config->inputType,
+          .flagv = NULL,
+      },
+      flags,
+  };
+
   // Implement
-  ap_mapArgcToFlags(&flags, argc, argv);
+  ap_mapArgsToFlags(&result, argc, argv);
 
   free(flags);
   return OK;

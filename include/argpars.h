@@ -44,9 +44,9 @@ typedef enum ap_ErrorType {
 // };
 
 typedef enum ap_InputType {
-  NUMBER,
   STRING,
-  BOOLEAN
+  BOOLEAN,
+  NUMBER
 } ap_InputType;
 
 typedef struct ap_Flag {
@@ -75,10 +75,17 @@ typedef struct ap_FlagResult {
   int _providedIndex;
 } ap_FlagResult;
 
+typedef struct ap_MainArg {
+  bool acceptMultiArgs;
+  ap_InputType inputType;
+
+  char **flagv;
+} ap_MainArg;
+
 // Will contain the parsed and structured information
 typedef struct ap_Result {
   int argc;
-  ap_FlagResult mainResult;
+  ap_MainArg mainArg;
   ap_FlagResult *flagResults;
 } ap_Result;
 
@@ -97,12 +104,17 @@ ap_ErrorType ap_addFlag(ap_Config *config, bool acceptMultiArgs, ap_InputType in
 // Actual parsing of args
 ap_ErrorType ap_parse(ap_Result *resultPtr, ap_Config *config, int argc, char **argv);
 
-ap_ErrorType ap_providedFlagsValidity(ap_Config *config, int argc, char **argv, int *flagCount);
+ap_ErrorType ap_providedFlagsValidity(ap_Config *config, int argc, char **argv);
 ap_ErrorType ap_providedShortFlagValidity(ap_Config *config, char *flag);
 ap_ErrorType ap_providedLongFlagValidity(ap_Config *config, char *flag);
-// ap_ErrorType ap_providedFlagsDuplicatesCheck(ap_Config *config, char **flags);
 
-ap_ErrorType ap_mapProvidedFlags(ap_FlagResult **flags, ap_Config *config, int argc, char **argv, int flagc);
+ap_ErrorType ap_mapProvidedFlags(ap_FlagResult **flags, ap_Config *config, int argc, char **argv);
+ap_ErrorType ap_mapArgsToFlags(ap_Result *result, int argc, char **argv);
+
+ap_ErrorType ap_mapMainArg(ap_Result *result, int argc, char **argv);
+ap_ErrorType ap_mapArgsToString(ap_FlagResult *flag, int argc, char **argv);
+ap_ErrorType ap_mapArgsToNumber(ap_FlagResult *flag, int argc, char **argv);
+ap_ErrorType ap_mapArgsToBoolean(ap_FlagResult *flag, int argc, char **argv);
 
 // Printing
 void ap_printTooManyFlagsProvided();
